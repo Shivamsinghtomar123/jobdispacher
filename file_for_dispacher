@@ -1,0 +1,41 @@
+# Detect OS
+ifeq ($(OS),Windows_NT)
+    DETECTED_OS := Windows
+    CC := gcc
+    CFLAGS := -Wall -D_WIN32 
+    LDFLAGS := -lws2_32
+    TARGET := job_dispatcher.exe
+else
+    DETECTED_OS := $(shell uname -s)
+    CC := gcc
+    CFLAGS := -Wall -Wextra
+    ifeq ($(DETECTED_OS),Linux)
+        LDFLAGS := 
+    endif
+    ifeq ($(DETECTED_OS),Darwin)
+        LDFLAGS := 
+    endif
+    TARGET := job_dispatcher
+endif
+
+SRC := job_dispatcher.c
+
+.PHONY: build clean
+
+build: $(TARGET)
+
+$(TARGET): $(SRC)
+	@echo "Building for $(DETECTED_OS)..."
+	$(CC) $(CFLAGS) -o $(TARGET) $(SRC) $(LDFLAGS)
+
+clean:
+	@echo "Cleaning up..."
+	rm -f $(TARGET)
+	
+# Print environment info for debugging
+debug-info:
+	@echo "OS: $(DETECTED_OS)"
+	@echo "CC: $(CC)"
+	@echo "CFLAGS: $(CFLAGS)"
+	@echo "LDFLAGS: $(LDFLAGS)"
+	@echo "Target: $(TARGET)"
